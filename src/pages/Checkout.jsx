@@ -119,13 +119,13 @@ const Checkout = () => {
           {cartItems.map(item => (
             <div key={item.id} style={{ display: 'flex', justifyContent: 'space-between' }}>
               <Text>{item.name} x {item.quantity}</Text>
-              <Text strong>${(item.price * item.quantity).toFixed(2)}</Text>
+              <Text strong>฿{(item.price * item.quantity).toFixed(2)}</Text>
             </div>
           ))}
           <Divider />
           <div style={{ display: 'flex', justifyContent: 'space-between' }}>
             <Text strong>Total:</Text>
-            <Title level={4}>${calculateTotal().toFixed(2)}</Title>
+            <Title level={4}>฿{calculateTotal().toFixed(2)}</Title>
           </div>
         </Space>
       ),
@@ -179,13 +179,13 @@ const Checkout = () => {
               {cartItems.map(item => (
                 <div key={item.id} style={{ display: 'flex', justifyContent: 'space-between' }}>
                   <Text>{item.name} x {item.quantity}</Text>
-                  <Text>${(item.price * item.quantity).toFixed(2)}</Text>
+                  <Text>฿{(item.price * item.quantity).toFixed(2)}</Text>
                 </div>
               ))}
               <Divider />
               <div style={{ display: 'flex', justifyContent: 'space-between' }}>
                 <Text>Subtotal:</Text>
-                <Text strong>${calculateTotal().toFixed(2)}</Text>
+                <Text strong>฿{calculateTotal().toFixed(2)}</Text>
               </div>
               <div style={{ display: 'flex', justifyContent: 'space-between' }}>
                 <Text>Shipping:</Text>
@@ -194,7 +194,7 @@ const Checkout = () => {
               <Divider />
               <div style={{ display: 'flex', justifyContent: 'space-between' }}>
                 <Text strong>Total:</Text>
-                <Title level={4}>${calculateTotal().toFixed(2)}</Title>
+                <Title level={4}>฿{calculateTotal().toFixed(2)}</Title>
               </div>
             </Space>
           </Card>

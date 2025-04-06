@@ -9,9 +9,9 @@ const { Meta } = Card;
 const Home = () => {
   const carouselItems = [
     {
-      title: "Summer Collection 2024",
+      title: "Salai Chai Naing Store Summer Collection 2024",
       subtitle: "Up to 50% Off on Selected Items",
-      image: "https://images.unsplash.com/photo-1441986300917-64674bd600d8",
+      image: "https://images.unsplash.com/photo-1441986300917-64674b  d600d8",
       buttonText: "Shop Now"
     },
     {
