@@ -1,6 +1,21 @@
 import React, { useState, useEffect } from 'react';
-import { Typography, Table, Button, InputNumber, Space, Card, Row, Col, Empty, message } from 'antd';
-import { DeleteOutlined, ShoppingOutlined, ArrowRightOutlined } from '@ant-design/icons';
+import {
+  Typography,
+  Table,
+  Button,
+  InputNumber,
+  Space,
+  Card,
+  Row,
+  Col,
+  Empty,
+  message
+} from 'antd';
+import {
+  DeleteOutlined,
+  ShoppingOutlined,
+  ArrowRightOutlined
+} from '@ant-design/icons';
 import { Link, useNavigate } from 'react-router-dom';
 
 const { Title, Text } = Typography;
@@ -18,14 +33,14 @@ const Cart = () => {
 
   const updateQuantity = (record, value) => {
     const updatedCart = cartItems.map(item =>
-      item.id === record.id ? { ...item, quantity: value } : item
+      item._id === record._id ? { ...item, quantity: value } : item
     );
     setCartItems(updatedCart);
     localStorage.setItem('cart', JSON.stringify(updatedCart));
   };
 
   const removeItem = (record) => {
-    const updatedCart = cartItems.filter(item => item.id !== record.id);
+    const updatedCart = cartItems.filter(item => item._id !== record._id);
     setCartItems(updatedCart);
     localStorage.setItem('cart', JSON.stringify(updatedCart));
     message.success('Item removed from cart');
@@ -47,21 +62,36 @@ const Cart = () => {
       dataIndex: 'name',
       key: 'name',
       render: (text, record) => (
-        <Space>
+        <div
+          style={{
+            display: 'flex',
+            flexDirection: window.innerWidth < 576 ? 'column' : 'row',
+            alignItems: 'center',
+            gap: 8
+          }}
+        >
           <img
-            src={record.image}
+            src={record.imageUrls}
             alt={text}
-            style={{ width: 80, height: 80, objectFit: 'cover' }}
+            style={{
+              width: 60,
+              height: 60,
+              objectFit: 'cover',
+              borderRadius: 4
+            }}
           />
-          <Link to={`/product/${record.id}`}>{text}</Link>
-        </Space>
+          <Link to={`/product/${record._id}`}>
+            <Text ellipsis style={{ maxWidth: 160 }}>{text}</Text>
+          </Link>
+        </div>
       ),
     },
     {
       title: 'Price',
       dataIndex: 'price',
       key: 'price',
-      render: price => `$${price.toFixed(2)}`,
+      responsive: ['sm'],
+      render: price => `฿${price.toFixed(2)}`,
     },
     {
       title: 'Quantity',
@@ -72,13 +102,15 @@ const Cart = () => {
           max={record.stock || 10}
           value={record.quantity}
           onChange={(value) => updateQuantity(record, value)}
+          style={{ width: '50%' }}
         />
       ),
     },
     {
       title: 'Subtotal',
       key: 'subtotal',
-      render: (_, record) => `$${(record.price * record.quantity).toFixed(2)}`,
+      responsive: ['sm'],
+      render: (_, record) => `฿${(record.price * record.quantity).toFixed(2)}`,
     },
     {
       title: 'Action',
@@ -99,32 +131,38 @@ const Cart = () => {
       <Empty
         image={Empty.PRESENTED_IMAGE_SIMPLE}
         description="Your cart is empty"
+        style={{ padding: '40px 0' }}
       >
-        <Button type="primary" icon={<ShoppingOutlined />}>
-          <Link to="/products">Continue Shopping</Link>
-        </Button>
+        <Link to="/products">
+          <Button type="primary" icon={<ShoppingOutlined />}>
+            Continue Shopping
+          </Button>
+        </Link>
       </Empty>
     );
   }
 
   return (
-    <Space direction="vertical" size={24} style={{ width: '100%' }}>
-      <Title level={2}>Shopping Cart</Title>
+    <Space direction="vertical" size={24} style={{ width: '100%', padding: '16px' }}>
+      <Title level={2} style={{ textAlign: 'center' }}>Shopping Cart</Title>
 
-      <Table
-        columns={columns}
-        dataSource={cartItems}
-        pagination={false}
-        rowKey="id"
-      />
+      <div style={{ overflowX: 'auto' }}>
+        <Table
+          columns={columns}
+          dataSource={cartItems}
+          pagination={false}
+          rowKey="_id"
+          style={{ minWidth: 320 }}
+        />
+      </div>
 
-      <Row justify="end" gutter={[16, 16]}>
-        <Col xs={24} md={8}>
+      <Row justify="center" gutter={[16, 16]}>
+        <Col xs={24} sm={20} md={16} lg={8}>
           <Card>
             <Space direction="vertical" style={{ width: '100%' }} size={16}>
               <div style={{ display: 'flex', justifyContent: 'space-between' }}>
                 <Text>Subtotal:</Text>
-                <Text strong>${calculateTotal().toFixed(2)}</Text>
+                <Text strong>฿{calculateTotal().toFixed(2)}</Text>
               </div>
               <div style={{ display: 'flex', justifyContent: 'space-between' }}>
                 <Text>Shipping:</Text>
@@ -132,14 +170,21 @@ const Cart = () => {
               </div>
               <div style={{ display: 'flex', justifyContent: 'space-between' }}>
                 <Text strong>Total:</Text>
-                <Title level={4}>${calculateTotal().toFixed(2)}</Title>
+                <Title level={4} style={{ margin: 0 }}>
+                  ฿{calculateTotal().toFixed(2)}
+                </Title>
               </div>
-              
-              <Space style={{ width: '100%' }}>
-                <Button danger onClick={clearCart}>
+
+              <Space direction="vertical" style={{ width: '100%' }}>
+                <Button danger block onClick={clearCart}>
                   Clear Cart
                 </Button>
-                <Button type="primary" icon={<ArrowRightOutlined />} onClick={() => navigate('/checkout')}>
+                <Button
+                  type="primary"
+                  block
+                  icon={<ArrowRightOutlined />}
+                  onClick={() => navigate('/checkout')}
+                >
                   Proceed to Checkout
                 </Button>
               </Space>

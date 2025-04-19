@@ -9,9 +9,9 @@ const { Meta } = Card;
 const Home = () => {
   const carouselItems = [
     {
-      title: "Salai Chai Naing Store Summer Collection 2024",
+      title: "Salai Chai Naing Store Summer Collection 2025",
       subtitle: "Up to 50% Off on Selected Items",
-      image: "https://images.unsplash.com/photo-1441986300917-64674b  d600d8",
+      image: "https://images.unsplash.com/photo-1441986300917-64674bd600d8",
       buttonText: "Shop Now"
     },
     {
@@ -31,19 +31,19 @@ const Home = () => {
   const featuredProducts = [
     {
       title: "Premium Headphones",
-      price: "$199.99",
+      price: "฿199.99",
       image: "https://images.unsplash.com/photo-1505740420928-5e560c06d30e",
       tag: "Best Seller"
     },
     {
       title: "Smart Watch",
-      price: "$299.99",
+      price: "฿299.99",
       image: "https://images.unsplash.com/photo-1523275335684-37898b6baf30",
       tag: "New"
     },
     {
       title: "Wireless Speaker",
-      price: "$159.99",
+      price: "฿159.99",
       image: "https://images.unsplash.com/photo-1589492477829-5e65395b66cc",
       tag: "Hot"
     }
@@ -55,7 +55,7 @@ const Home = () => {
         {carouselItems.map((item, index) => (
           <div key={index}>
             <div style={{
-              height: '600px',
+              height: '500px',
               position: 'relative',
               overflow: 'hidden',
               borderRadius: '16px',
@@ -141,7 +141,7 @@ const Home = () => {
                   <div>
                     <Text strong style={{ fontSize: 18 }}>Free Shipping</Text>
                     <br />
-                    <Text type="secondary">On orders over $100</Text>
+                    <Text type="secondary">On orders over ฿100</Text>
                   </div>
                 </Space>
               </Col>

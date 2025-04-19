@@ -1,6 +1,13 @@
 import React, { useState, useEffect } from 'react';
-import { Layout, Menu, Badge, Input, Button, theme, Drawer, Space } from 'antd';
-import { Link, useLocation } from 'react-router-dom';
+import {
+  Layout,
+  Menu,
+  Badge,
+  Input,
+  Button,
+  Drawer,
+  Space
+} from 'antd';
 import {
   ShoppingCartOutlined,
   HomeOutlined,
@@ -9,6 +16,7 @@ import {
   MenuOutlined,
   UserOutlined
 } from '@ant-design/icons';
+import { Link, useLocation } from 'react-router-dom';
 
 const { Header, Content, Footer } = Layout;
 const { Search } = Input;
@@ -24,7 +32,6 @@ const MainLayout = ({ children }) => {
       setIsMobile(window.innerWidth <= 768);
     };
 
-    // Update cart count whenever localStorage changes
     const updateCartCount = () => {
       const cart = JSON.parse(localStorage.getItem('cart') || '[]');
       const count = cart.reduce((total, item) => total + (item.quantity || 1), 0);
@@ -33,8 +40,6 @@ const MainLayout = ({ children }) => {
 
     window.addEventListener('resize', handleResize);
     window.addEventListener('storage', updateCartCount);
-    
-    // Initial cart count
     updateCartCount();
 
     return () => {
@@ -44,97 +49,111 @@ const MainLayout = ({ children }) => {
   }, []);
 
   return (
-    <Layout className="min-h-screen bg-white">
+    <Layout style={{ minHeight: '100vh', backgroundColor: '#f5f5f5' }}>
       <Header
         style={{
           position: 'sticky',
           top: 0,
-          zIndex: 50,
+          zIndex: 1000,
           width: '100%',
+          padding: isMobile ? '0 16px' : '0 40px',
+          background: '#141414',
           display: 'flex',
           alignItems: 'center',
-          padding: isMobile ? '0 16px' : '0 50px',
-          background: '#000000',
-          height: '72px',
+          justifyContent: 'space-between',
+          height: 64,
         }}
       >
-        {isMobile && (
-          <Button
-            type="text"
-            icon={<MenuOutlined className="text-white" />}
-            onClick={() => setOpen(true)}
-            className="mr-4"
-          />
-        )}
-        
-        <Link to="/" className="no-underline">
-          <div className={`font-bold text-white ${isMobile ? 'text-xl' : 'text-2xl'} mr-6`}>
-            TCL Store
-          </div>
-        </Link>
+        <div style={{ display: 'flex', alignItems: 'center' }}>
+          {isMobile && (
+            <Button
+              type="text"
+              icon={<MenuOutlined style={{ color: 'white', fontSize: 20 }} />}
+              onClick={() => setOpen(true)}
+              style={{ marginRight: 12 }}
+            />
+          )}
 
-        {!isMobile && (
-          <Menu
-            mode="horizontal"
-            selectedKeys={[location.pathname]}
-            className="flex-1 min-w-0 border-none bg-black"
-            theme="dark"
-          >
-            <Menu.Item key="/" icon={<HomeOutlined />}>
-              <Link to="/">Home</Link>
-            </Menu.Item>
-            <Menu.Item key="/products" icon={<AppstoreOutlined />}>
-              <Link to="/products">Products</Link>
-            </Menu.Item>
-          </Menu>
-        )}
+          <Link to="/" style={{ color: 'white', fontSize: 22, fontWeight: 'bold', textDecoration: 'none' }}>
+            TCL Store
+          </Link>
+
+          {!isMobile && (
+            <Menu
+              mode="horizontal"
+              selectedKeys={[location.pathname]}
+              theme="dark"
+              style={{ marginLeft: 40, background: 'transparent', borderBottom: 'none' }}
+            >
+              <Menu.Item key="/" icon={<HomeOutlined />}>
+                <Link to="/">Home</Link>
+              </Menu.Item>
+              <Menu.Item key="/products" icon={<AppstoreOutlined />}>
+                <Link to="/products">Products</Link>
+              </Menu.Item>
+            </Menu>
+          )}
+        </div>
 
         <Space size={isMobile ? 8 : 16}>
           {!isMobile && (
-            <Search 
-              placeholder="Search products..." 
-              className="w-64 pt-4 rounded-full"
+            <Search
+              placeholder="Search products..."
+              allowClear
+              style={{ width: 250 }}
+              className="rounded pt-4"
             />
           )}
+
           <Link to="/cart">
-            <Badge count={cartCount}>
-              <Button type="text" icon={<ShoppingCartOutlined className="text-white text-xl" />} />
+            <Badge count={cartCount} size="small">
+              <ShoppingCartOutlined style={{ color: 'white', fontSize: 20 }} />
             </Badge>
           </Link>
-          <Button type="text" icon={<UserOutlined className="text-white text-xl" />} />
+
+          <UserOutlined style={{ color: 'white', fontSize: 20 }} />
         </Space>
       </Header>
 
+      {/* Mobile Search */}
       {isMobile && (
-        <div className="p-3 bg-white border-b border-gray-200">
-          <Search placeholder="Search products..." className="w-full" />
+        <div style={{ padding: '12px 16px', background: 'white', borderBottom: '1px solid #eaeaea' }}>
+          <Search placeholder="Search products..." allowClear />
         </div>
       )}
 
-      <Content className={`${isMobile ? 'p-4' : 'p-6'} bg-gray-50`}>
-        <div className="max-w-7xl mx-auto bg-white rounded-lg shadow-sm p-6">
+      {/* Main Content */}
+      <Content style={{ padding: isMobile ? '16px' : '32px' }}>
+        <div style={{
+          maxWidth: 1200,
+          margin: '0 auto',
+          padding: isMobile ? '16px' : '24px',
+          background: 'white',
+          borderRadius: 8,
+          boxShadow: '0 1px 3px rgba(0,0,0,0.1)'
+        }}>
           {children}
         </div>
       </Content>
 
-      <Footer className="text-center bg-black text-white py-6">
-        <div className="max-w-7xl mx-auto">
-          TCL Online Store ©{new Date().getFullYear()}
-        </div>
+      {/* Footer */}
+      <Footer style={{ textAlign: 'center', background: '#141414', color: '#ffffff', marginTop: 24 }}>
+        TCL Online Store ©{new Date().getFullYear()}
       </Footer>
 
+      {/* Mobile Drawer */}
       <Drawer
         title="Menu"
         placement="left"
         onClose={() => setOpen(false)}
         open={open}
-        width={280}
-        className="bg-white"
+        width={250}
+        bodyStyle={{ padding: 0 }}
       >
-        <Menu 
-          mode="vertical" 
+        <Menu
+          mode="vertical"
           selectedKeys={[location.pathname]}
-          className="border-none"
+          style={{ border: 'none' }}
         >
           <Menu.Item key="/" icon={<HomeOutlined />}>
             <Link to="/">Home</Link>
