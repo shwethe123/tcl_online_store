@@ -1,7 +1,7 @@
 import axios from 'axios';
 
 // Example of how to set a base URL for the API
-const API_URL = 'http://localhost:5000/api';
+const API_URL = 'https://store-backend-9byz.onrender.com/api';
 
 // Fetch products from the API
 export const fetchProducts = async () => {

@@ -219,6 +219,7 @@ const Products = () => {
                           }
                           actions={[
                             <Button
+                              className='ml-2'
                               type="primary"
                               icon={<ShoppingCartOutlined />}
                               onClick={() => handleAddToCart(product)}

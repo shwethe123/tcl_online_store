@@ -11,12 +11,14 @@ import {
   Button,
   message,
   Image,
-  Descriptions
+  Descriptions,
+  Grid
 } from 'antd';
 import { ShoppingCartOutlined, HeartOutlined, HeartFilled } from '@ant-design/icons';
 import { fetchProducts } from '../api/api_store';
 
 const { Title, Text } = Typography;
+const { useBreakpoint } = Grid;
 
 const ProductDetails = () => {
   const { id } = useParams();
@@ -24,6 +26,7 @@ const ProductDetails = () => {
   const [loading, setLoading] = useState(true);
   const [cart, setCart] = useState([]);
   const [wishlist, setWishlist] = useState([]);
+  const screens = useBreakpoint(); // detect screen size
 
   useEffect(() => {
     const savedCart = localStorage.getItem('cart');
@@ -112,12 +115,18 @@ const ProductDetails = () => {
                 <Text type="danger">Only {product.stock} left!</Text>
               )}
 
-              <Space size={16}>
+              {/* 👇 Responsive Buttons */}
+              <Space
+                size={16}
+                direction={screens.xs ? 'vertical' : 'horizontal'}
+                style={{ width: '100%' }}
+              >
                 <Button
                   type="primary"
                   icon={<ShoppingCartOutlined />}
                   onClick={handleAddToCart}
                   size="large"
+                  block={screens.xs}
                 >
                   Add to Cart
                 </Button>
@@ -131,6 +140,7 @@ const ProductDetails = () => {
                   }
                   onClick={toggleWishlist}
                   size="large"
+                  block={screens.xs}
                 >
                   {wishlist.includes(product._id)
                     ? 'Remove from Wishlist'
@@ -148,7 +158,7 @@ const ProductDetails = () => {
                 <Descriptions.Item label="Rating" span={3}>
                   {product.rating} / 5
                 </Descriptions.Item>
-                <Descriptions.Item label="reviews" span={3}>
+                <Descriptions.Item label="Reviews" span={3}>
                   {product.reviews}
                 </Descriptions.Item>
                 <Descriptions.Item label="Features" span={3}>
@@ -156,11 +166,11 @@ const ProductDetails = () => {
                 </Descriptions.Item>
                 <Descriptions.Item label="Specs" span={3}>
                   <ul>
-                  {Object.entries(product.specs || {}).map(([key, value]) => (
-                    <li key={key}>
-                      <strong>{key}:</strong> {value}
-                    </li>
-                  ))}
+                    {Object.entries(product.specs || {}).map(([key, value]) => (
+                      <li key={key}>
+                        <strong>{key}:</strong> {value}
+                      </li>
+                    ))}
                   </ul>
                 </Descriptions.Item>
                 <Descriptions.Item label="Description" span={3}>
