@@ -1,23 +1,23 @@
 import React, { useState, useEffect } from 'react';
-import { 
-  Typography, 
-  Card, 
-  Row, 
-  Col, 
-  Rate, 
-  Tag, 
-  Space, 
-  Button, 
-  Select, 
-  message, 
-  Input, 
-  Slider, 
-  Badge, 
-  Pagination, 
+import {
+  Typography,
+  Card,
+  Row,
+  Col,
+  Rate,
+  Tag,
+  Space,
+  Button,
+  Select,
+  message,
+  Input,
+  Slider,
+  Badge,
+  Pagination,
   Empty,
   Skeleton
 } from 'antd';
-import { ShoppingCartOutlined, SearchOutlined, HeartOutlined, HeartFilled } from '@ant-design/icons';
+import { ShoppingCartOutlined, HeartOutlined, HeartFilled } from '@ant-design/icons';
 import { Link } from 'react-router-dom';
 import { fetchProducts } from '../api/api_store';
 
@@ -27,7 +27,7 @@ const { Option } = Select;
 const { Search } = Input;
 
 const Products = () => {
-  const [selectedCategory, setSelectedCategory] = useState('All');
+  const [selectedCategory, setSelectedCategory] = useState('all');
   const [cart, setCart] = useState([]);
   const [searchQuery, setSearchQuery] = useState('');
   const [priceRange, setPriceRange] = useState([0, 10000]);
@@ -51,7 +51,7 @@ const Products = () => {
         const productsData = await fetchProducts();
         setProducts(productsData);
       } catch (error) {
-        message.error('Failed to fetch products: ' + error.message);
+        message.error('failed to fetch products: ' + error.message);
       } finally {
         setLoading(false);
       }
@@ -60,13 +60,13 @@ const Products = () => {
     fetchProductsData();
   }, []);
 
-  const categories = ['All', ...new Set(products.map(product => product.category))];
+  const categories = ['all', ...new Set(products.map(product => product.category?.toLowerCase()))];
   const maxPrice = products.length > 0 ? Math.max(...products.map(p => p.price)) : 10000;
 
   const handleAddToCart = (product) => {
     const existingItem = cart.find(item => item._id === product._id);
     let updatedCart;
-  
+
     if (existingItem) {
       updatedCart = cart.map(item =>
         item._id === product._id ? { ...item, quantity: (item.quantity || 1) + 1 } : item
@@ -74,29 +74,29 @@ const Products = () => {
     } else {
       updatedCart = [...cart, { ...product, quantity: 1 }];
     }
-  
+
     setCart(updatedCart);
     localStorage.setItem('cart', JSON.stringify(updatedCart));
     window.dispatchEvent(new Event('storage'));
-    message.success('Added to cart successfully!');
+    message.success('added to cart');
   };
-  
+
   const toggleWishlist = (productId) => {
     const newWishlist = wishlist.includes(productId)
       ? wishlist.filter(id => id !== productId)
       : [...wishlist, productId];
-  
+
     setWishlist(newWishlist);
     localStorage.setItem('wishlist', JSON.stringify(newWishlist));
     message.success(
-      wishlist.includes(productId) ? 'Removed from wishlist' : 'Added to wishlist'
+      wishlist.includes(productId) ? 'removed from wishlist' : 'added to wishlist'
     );
   };
 
   const filteredAndSortedProducts = products
     .filter(product => {
-      const matchesCategory = selectedCategory === 'All' || product.category === selectedCategory;
-      const matchesSearch = product.name?.toLowerCase().includes(searchQuery.toLowerCase()); // FIXED
+      const matchesCategory = selectedCategory === 'all' || product.category?.toLowerCase() === selectedCategory;
+      const matchesSearch = product.name?.toLowerCase().includes(searchQuery.toLowerCase());
       const matchesPrice = product.price >= priceRange[0] && product.price <= priceRange[1];
       return matchesCategory && matchesSearch && matchesPrice;
     })
@@ -120,19 +120,19 @@ const Products = () => {
         <Row gutter={[24, 24]} align="middle">
           <Col xs={24} md={8}>
             <Title level={2} style={{ margin: 0 }}>
-              Our Products {!loading && `(${filteredAndSortedProducts.length})`}
+              our products {!loading && `(${filteredAndSortedProducts.length})`}
             </Title>
           </Col>
           <Col xs={24} md={16}>
             <Space wrap>
               <Search
-                placeholder="Search products..."
+                placeholder="search products..."
                 onChange={(e) => setSearchQuery(e.target.value)}
                 style={{ width: 200 }}
                 allowClear
               />
-              <Select 
-                value={selectedCategory} 
+              <Select
+                value={selectedCategory}
                 onChange={setSelectedCategory}
                 style={{ width: 150 }}
                 options={categories.map(category => ({
@@ -141,15 +141,15 @@ const Products = () => {
                 }))}
               />
               <Select
-                placeholder="Sort by"
+                placeholder="sort by"
                 style={{ width: 150 }}
                 onChange={setSortBy}
                 value={sortBy}
                 options={[
-                  { value: 'default', label: 'Default' },
-                  { value: 'price-asc', label: 'Price: Low to High' },
-                  { value: 'price-desc', label: 'Price: High to Low' },
-                  { value: 'rating', label: 'Top Rated' }
+                  { value: 'default', label: 'default' },
+                  { value: 'price-asc', label: 'price: low to high' },
+                  { value: 'price-desc', label: 'price: high to low' },
+                  { value: 'rating', label: 'top rated' }
                 ]}
               />
             </Space>
@@ -158,16 +158,16 @@ const Products = () => {
 
         <Row gutter={[24, 24]}>
           <Col xs={24} md={6}>
-            <Card title="Filters">
+            <Card title="filters">
               <Space direction="vertical" style={{ width: '100%' }}>
-                <Text strong>Price Range</Text>
+                <Text strong>price range</Text>
                 <Slider
                   range
                   min={0}
                   max={maxPrice}
                   value={priceRange}
                   onChange={setPriceRange}
-                  tooltip={{ formatter: value => `$${value}` }} // FIXED
+                  tooltip={{ formatter: value => `$${value}` }}
                 />
                 <Space style={{ marginTop: 8 }}>
                   <Text>฿{priceRange[0]}</Text>
@@ -182,10 +182,8 @@ const Products = () => {
             {loading ? (
               <Row gutter={[24, 24]}>
                 {[...Array(6)].map((_, i) => (
-                  <Col xs={24} sm={12} lg={8} key={i}>
-                    <Card>
-                      <Skeleton active />
-                    </Card>
+                  <Col xs={12} sm={12} lg={8} key={i}>
+                    <Card><Skeleton active /></Card>
                   </Col>
                 ))}
               </Row>
@@ -193,12 +191,12 @@ const Products = () => {
               <Row gutter={[24, 24]}>
                 {paginatedProducts.length > 0 ? (
                   paginatedProducts.map(product => (
-                    <Col xs={24} sm={12} lg={8} key={product._id}>
+                    <Col xs={12} sm={12} lg={8} key={product._id}>
                       <Badge.Ribbon
                         text={
-                          product.price > 500 ? 'Premium' :
-                          product.price > 200 ? 'Standard' :
-                          'Best Deal'
+                          product.price > 500 ? 'premium' :
+                          product.price > 200 ? 'standard' :
+                          'best deal'
                         }
                         color={
                           product.price > 500 ? 'black' :
@@ -213,18 +211,22 @@ const Products = () => {
                               <img
                                 alt={product.name}
                                 src={product.imageUrls}
-                                style={{ height: 200, objectFit: 'cover' }}
+                                style={{
+                                  width: '100%',
+                                  maxHeight: 180,
+                                  objectFit: 'cover'
+                                }}
                               />
                             </Link>
                           }
                           actions={[
                             <Button
-                              className='ml-2'
                               type="primary"
                               icon={<ShoppingCartOutlined />}
                               onClick={() => handleAddToCart(product)}
+                              style={{ fontSize: '12px', height: '30px', padding: '0 8px' }}
                             >
-                              Add to Cart
+                              add to cart
                             </Button>,
                             wishlist.includes(product._id)
                               ? <HeartFilled
@@ -238,14 +240,20 @@ const Products = () => {
                           ]}
                         >
                           <Meta
-                            title={<Link to={`/product/${product._id}`}>{product.name}</Link>}
+                            title={
+                              <Link to={`/product/${product._id}`} style={{ fontSize: '13px', fontWeight: 500 }}>
+                                {product.name?.toLowerCase()}
+                              </Link>
+                            }
                             description={
                               <Space direction="vertical" size={2}>
-                                <Tag color="blue">{product.category}</Tag>
-                                <Rate disabled defaultValue={product.rating} style={{ fontSize: 14 }} />
-                                <Text strong style={{ fontSize: 16 }}>฿{product.price}</Text>
+                                <Tag color="blue" style={{ fontSize: '11px' }}>{product.category?.toLowerCase()}</Tag>
+                                <Rate disabled defaultValue={product.rating} style={{ fontSize: 12 }} />
+                                <Text strong style={{ fontSize: '13px' }}>฿{product.price}</Text>
                                 {product.stock <= 5 && (
-                                  <Text type="danger">Only {product.stock} left!</Text>
+                                  <Text type="danger" style={{ fontSize: '12px' }}>
+                                    only {product.stock} left!
+                                  </Text>
                                 )}
                               </Space>
                             }
@@ -256,9 +264,7 @@ const Products = () => {
                   ))
                 ) : (
                   <Col span={24}>
-                    <Card>
-                      <Empty description="No products found matching your criteria" />
-                    </Card>
+                    <Card><Empty description="no products found matching your criteria" /></Card>
                   </Col>
                 )}
               </Row>

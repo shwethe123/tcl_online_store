@@ -32,6 +32,23 @@
     animation: logo-spin infinite 20s linear;
   }
 }
+/* For mobile screens */
+@media (max-width: 768px) {
+  .action-buttons {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+}
+
+/* For larger screens (tablet and up) */
+@media (min-width: 769px) {
+  .action-buttons {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+  }
+}
 
 .card {
   padding: 2em;

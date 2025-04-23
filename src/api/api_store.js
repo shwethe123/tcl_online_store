@@ -14,7 +14,3 @@ export const fetchProducts = async () => {
   }
 };
 
-// You can add more API calls here as needed, for example:
-// - Fetch a single product by ID
-// - Add a product to cart
-// - Update cart, etc.
