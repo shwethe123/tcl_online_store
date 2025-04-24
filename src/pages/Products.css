@@ -1,0 +1,32 @@
+/* src/pages/Products.css */
+.product-card .ant-card-actions {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 8px;
+  }
+  
+  .card-action-item {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+  }
+  
+  /* Mobile responsive: Stack vertically */
+  @media (max-width: 576px) {
+    .product-card .ant-card-actions {
+      flex-direction: column;
+      align-items: stretch;
+      gap: 8px;
+    }
+  
+    .card-action-item {
+      width: 100%;
+      justify-content: stretch;
+    }
+  
+    .card-action-item .ant-btn {
+      width: 100%;
+    }
+  }
+  
