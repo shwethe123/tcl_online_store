@@ -6,13 +6,14 @@ import {
   Input,
   Button,
   Drawer,
-  Space
+  Row,
+  Col,
+  FloatButton
 } from 'antd';
 import {
   ShoppingCartOutlined,
   HomeOutlined,
   AppstoreOutlined,
-  SearchOutlined,
   MenuOutlined,
   UserOutlined
 } from '@ant-design/icons';
@@ -22,7 +23,7 @@ const { Header, Content, Footer } = Layout;
 const { Search } = Input;
 
 const MainLayout = ({ children }) => {
-  const [open, setOpen] = useState(false);
+  const [openDrawer, setOpenDrawer] = useState(false);
   const [isMobile, setIsMobile] = useState(window.innerWidth <= 768);
   const [cartCount, setCartCount] = useState(0);
   const location = useLocation();
@@ -48,121 +49,122 @@ const MainLayout = ({ children }) => {
     };
   }, []);
 
+  const menuItems = [
+    {
+      key: '/',
+      label: <Link to="/">Home</Link>,
+      icon: <HomeOutlined />
+    },
+    {
+      key: '/products',
+      label: <Link to="/products">Products</Link>,
+      icon: <AppstoreOutlined />
+    }
+  ];
+
   return (
-    <Layout style={{ minHeight: '100vh', backgroundColor: '#f5f5f5' }}>
+    <Layout style={{ minHeight: '100vh', background: '#f0f2f5' }}>
       <Header
         style={{
-          position: 'sticky',
-          top: 0,
-          zIndex: 1000,
-          width: '100%',
-          padding: isMobile ? '0 16px' : '0 40px',
-          background: '#141414',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'space-between',
-          height: 64,
+          background: '#ffffff',
+          padding: isMobile ? '0 16px' : '0 64px',
+          borderBottom: '1px solid #dcdcdc',
+          boxShadow: '0 1px 4px rgba(0, 0, 0, 0.05)',
         }}
       >
-        <div style={{ display: 'flex', alignItems: 'center' }}>
-          {isMobile && (
-            <Button
-              type="text"
-              icon={<MenuOutlined style={{ color: 'white', fontSize: 20 }} />}
-              onClick={() => setOpen(true)}
-              style={{ marginRight: 12 }}
-            />
-          )}
-
-          <Link to="/" style={{ color: 'white', fontSize: 22, fontWeight: 'bold', textDecoration: 'none' }}>
-            TCL Store
-          </Link>
-
-          {!isMobile && (
-            <Menu
-              mode="horizontal"
-              selectedKeys={[location.pathname]}
-              theme="dark"
-              style={{ marginLeft: 40, background: 'transparent', borderBottom: 'none' }}
-            >
-              <Menu.Item key="/" icon={<HomeOutlined />}>
-                <Link to="/">Home</Link>
-              </Menu.Item>
-              <Menu.Item key="/products" icon={<AppstoreOutlined />}>
-                <Link to="/products">Products</Link>
-              </Menu.Item>
-            </Menu>
-          )}
-        </div>
-
-        <Space size={isMobile ? 8 : 16}>
-          {!isMobile && (
-            <Search
-              placeholder="Search products..."
-              allowClear
-              style={{ width: 250 }}
-              className="rounded pt-4"
-            />
-          )}
-
-          <Link to="/cart">
-            <Badge count={cartCount} size="small">
-              <ShoppingCartOutlined style={{ color: 'white', fontSize: 20 }} />
-            </Badge>
-          </Link>
-
-          <UserOutlined style={{ color: 'white', fontSize: 20 }} />
-        </Space>
+        <Row justify="space-between" align="middle" style={{ height: 64 }}>
+          <Col>
+            <div style={{ display: 'flex', alignItems: 'center' }}>
+              {isMobile && (
+                <Button
+                  type="text"
+                  icon={<MenuOutlined />}
+                  onClick={() => setOpenDrawer(true)}
+                  style={{ marginRight: 12 }}
+                />
+              )}
+              <Link to="/" style={{ fontSize: 24, fontWeight: 'bold', color: '#4A90E2' }}>
+                TCL Store
+              </Link>
+            </div>
+          </Col>
+          <Col>
+            {!isMobile && (
+              <Menu
+                mode="horizontal"
+                selectedKeys={[location.pathname]}
+                items={menuItems}
+                style={{ borderBottom: 'none' }}
+                theme="light"
+              />
+            )}
+          </Col>
+          <Col>
+            <div style={{ display: 'flex', gap: 16 }}>
+              {!isMobile && (
+                <Search placeholder="Search for products..." style={{ width: 240 }} allowClear />
+              )}
+              <Link to="/cart">
+                <Badge count={cartCount} size="small">
+                  <ShoppingCartOutlined style={{ fontSize: 22, color: '#4A90E2' }} />
+                </Badge>
+              </Link>
+              <UserOutlined style={{ fontSize: 22, color: '#4A90E2' }} />
+            </div>
+          </Col>
+        </Row>
       </Header>
 
       {/* Mobile Search */}
       {isMobile && (
-        <div style={{ padding: '12px 16px', background: 'white', borderBottom: '1px solid #eaeaea' }}>
-          <Search placeholder="Search products..." allowClear />
+        <div style={{ padding: 12, background: '#ffffff', borderBottom: '1px solid #eaeaea' }}>
+          <Search placeholder="Search..." allowClear />
         </div>
       )}
 
       {/* Main Content */}
-      <Content style={{ padding: isMobile ? '16px' : '32px' }}>
+      <Content style={{ padding: isMobile ? 16 : 40, background: '#f0f2f5' }}>
         <div style={{
           maxWidth: 1200,
-          margin: '0 auto',
-          padding: isMobile ? '16px' : '24px',
-          background: 'white',
-          borderRadius: 8,
-          boxShadow: '0 1px 3px rgba(0,0,0,0.1)'
+          margin: 'auto',
+          padding: isMobile ? 16 : 32,
+          background: '#ffffff',
+          borderRadius: 16,
+          boxShadow: '0 8px 24px rgba(0, 0, 0, 0.05)',
         }}>
           {children}
         </div>
       </Content>
 
       {/* Footer */}
-      <Footer style={{ textAlign: 'center', background: '#141414', color: '#ffffff', marginTop: 24 }}>
-        TCL Online Store ©{new Date().getFullYear()}
+      <Footer style={{ textAlign: 'center', background: '#ffffff', color: '#888888' }}>
+        © {new Date().getFullYear()} TCL Store — Designed with 💙 and React
       </Footer>
 
-      {/* Mobile Drawer */}
+      {/* Drawer for Mobile Menu */}
       <Drawer
-        title="Menu"
+        title={<span style={{ color: '#4A90E2', fontWeight: 600 }}>Navigation</span>}
         placement="left"
-        onClose={() => setOpen(false)}
-        open={open}
-        width={250}
-        bodyStyle={{ padding: 0 }}
+        onClose={() => setOpenDrawer(false)}
+        open={openDrawer}
       >
         <Menu
           mode="vertical"
           selectedKeys={[location.pathname]}
-          style={{ border: 'none' }}
-        >
-          <Menu.Item key="/" icon={<HomeOutlined />}>
-            <Link to="/">Home</Link>
-          </Menu.Item>
-          <Menu.Item key="/products" icon={<AppstoreOutlined />}>
-            <Link to="/products">Products</Link>
-          </Menu.Item>
-        </Menu>
+          items={menuItems}
+        />
       </Drawer>
+
+      {/* Floating Cart Button (mobile/tablet only) */}
+      {isMobile && (
+        <Link to="/cart">
+          <FloatButton
+            icon={<ShoppingCartOutlined />}
+            badge={{ count: cartCount }}
+            style={{ right: 24, bottom: 80, backgroundColor: '#4A90E2', color: '#fff' }}
+          />
+        </Link>
+      )}
     </Layout>
   );
 };

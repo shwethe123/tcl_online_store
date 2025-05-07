@@ -1,5 +1,5 @@
-import React from 'react';
-import { Typography, Card, Row, Col, Button, Tag, Divider } from 'antd';
+import React, { useEffect, useState } from 'react';
+import { Typography, Card, Row, Col, Button, Tag, Divider, Spin } from 'antd';
 import {
   ClockCircleOutlined,
   SmileOutlined,
@@ -8,11 +8,11 @@ import {
   ShoppingOutlined
 } from '@ant-design/icons';
 import { motion } from 'framer-motion';
+import { fetchProducts } from '../api/api_store';
 
 const { Title, Text } = Typography;
 const { Meta } = Card;
 
-// Typing animation variants
 const containerVariants = {
   hidden: { opacity: 0 },
   show: {
@@ -28,32 +28,12 @@ const letterVariants = {
   show: { opacity: 1, y: 0 },
 };
 
-const featuredProducts = [
-  {
-    title: "Bass Boost Earbuds",
-    price: "฿219.00",
-    image: "https://shorturl.at/1tLe7"
-  },
-  {
-    title: "Smart Fitness Band",
-    price: "฿499.00",
-    image: "https://shorturl.at/1sXVp"
-  },
-  {
-    title: "Stylish Hoodie",
-    price: "฿699.00",
-    image: "https://images.unsplash.com/photo-1541099649105-f69ad21f3246"
-  }
-];
-
-const categories = ["All", "Gadgets", "Fashion", "Lifestyle", "Home", "Sale"];
-
 const TypingTitle = ({ text }) => (
   <motion.h1
     variants={containerVariants}
     initial="hidden"
     animate="show"
-    style={{ fontSize: 50, color: '#fff', fontWeight: 'bold' }}
+    style={{ fontSize: 48, color: '#ffffff', fontWeight: 'bold' }}
   >
     {text.split('').map((char, i) => (
       <motion.span key={i} variants={letterVariants}>
@@ -63,47 +43,81 @@ const TypingTitle = ({ text }) => (
   </motion.h1>
 );
 
-const CategoryButtons = () => {
-  return (
-    <div style={{ padding: '20px 5%' }}>
-      <div style={{ overflowX: 'auto', whiteSpace: 'nowrap', padding: '20px' }}>
-        {categories.map((cat, index) => (
-          <motion.div
-            key={index}
-            whileHover={{
-              y: -5,            // Moves the button upwards on hover
-              scale: 1.05,       // Slightly increases the size
-              rotate: 2,         // Adds a small rotation for dynamic effect
-              transition: { duration: 0.3 },
+const CategoryButtons = ({ categories, onCategorySelect }) => (
+  <div style={{ padding: '24px 5%', backgroundColor: '#ffffff' }}>
+    <div style={{ overflowX: 'auto', whiteSpace: 'nowrap', padding: '16px 0' }}>
+      {categories.map((cat, index) => (
+        <motion.div
+          key={index}
+          whileHover={{
+            y: -4,
+            scale: 1.05,
+            transition: { duration: 0.3 },
+          }}
+          style={{ display: 'inline-block', marginRight: 12 }}
+        >
+          <Button
+            type="text"
+            style={{
+              borderRadius: 20,
+              backgroundColor: '#f0f2f5',
+              border: '1px solid #dcdcdc',
+              padding: '6px 20px',
+              color: '#4A90E2',
+              fontWeight: 500,
             }}
-            style={{ display: 'inline-block', marginRight: 16 }}
+            icon={index === 0 ? <AppstoreOutlined /> : <ShoppingOutlined />}
+            onClick={() => onCategorySelect(cat)} // Set the selected category
           >
-            <Button
-              type="text"
-              style={{
-                borderRadius: 20,
-                backgroundColor: '#fafafa',
-                border: '1px solid #ddd',
-                padding: '6px 18px',
-              }}
-              icon={index === 0 ? <AppstoreOutlined /> : <ShoppingOutlined />}
-            >
-              {cat}
-            </Button>
-          </motion.div>
-        ))}
-      </div>
+            {cat}
+          </Button>
+        </motion.div>
+      ))}
     </div>
-  );
-};
+  </div>
+);
 
 const Home = () => {
+  const [featuredProducts, setFeaturedProducts] = useState([]);
+  const [filteredProducts, setFilteredProducts] = useState([]);
+  const [categories, setCategories] = useState([]);
+  const [selectedCategory, setSelectedCategory] = useState('All'); // Track the selected category
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const loadData = async () => {
+      try {
+        const products = await fetchProducts();
+        setFeaturedProducts(products);
+        setFilteredProducts(products); // Initially show all products
+
+        // Extract unique categories from the fetched products
+        const productCategories = Array.from(new Set(products.map((product) => product.category)));
+        setCategories(["All", ...productCategories]); // Adding "All" to the start
+      } catch (err) {
+        console.error('Failed to fetch products:', err);
+      } finally {
+        setLoading(false);
+      }
+    };
+    loadData();
+  }, []);
+
+  // Filter the products based on the selected category
+  useEffect(() => {
+    if (selectedCategory === 'All') {
+      setFilteredProducts(featuredProducts); // Show all products when "All" is selected
+    } else {
+      setFilteredProducts(featuredProducts.filter(product => product.category === selectedCategory));
+    }
+  }, [selectedCategory, featuredProducts]); // Run when selectedCategory or featuredProducts change
+
   return (
-    <div style={{ fontFamily: 'Inter, sans-serif', backgroundColor: '#fff' }}>
+    <div style={{ fontFamily: 'Inter, sans-serif', backgroundColor: '#f7f9fc' }}>
       {/* Hero Section */}
       <div style={{
         padding: '60px 5%',
-        background: 'linear-gradient(135deg, #ff6f61, #ffcc70)',
+        background: 'linear-gradient(135deg, #4A90E2, #70c1ff)',
         color: '#fff',
         borderBottomRightRadius: 60,
       }}>
@@ -114,7 +128,7 @@ const Home = () => {
               Up to 50% off on headphones, wearables & streetwear.
             </Text>
             <br /><br />
-            <Button size="large" type="default" style={{ color: '#ff4d4f' }}>
+            <Button size="large" type="default" style={{ color: '#4A90E2' }}>
               Shop Flash Sale
             </Button>
           </Col>
@@ -129,36 +143,71 @@ const Home = () => {
       </div>
 
       {/* Category Navigation */}
-      <CategoryButtons />
+      <CategoryButtons categories={categories} onCategorySelect={setSelectedCategory} />
 
       {/* Product Grid */}
-      <div style={{ padding: '40px 5%' }}>
-        <Title level={2} style={{ textAlign: 'center' }}>Hot Picks</Title>
+      <div style={{ padding: '50px 5%', backgroundColor: '#ffffff' }}>
+        <Title level={2} style={{ textAlign: 'center', color: '#333' }}>🔥 Hot Picks</Title>
         <Row gutter={[24, 24]} justify="center" style={{ marginTop: 30 }}>
-          {featuredProducts.map((product, index) => (
+          {(loading ? Array.from({ length: 6 }) : filteredProducts).map((product, index) => (
             <Col xs={24} sm={12} md={8} key={index}>
               <Card
                 hoverable
-                style={{ borderRadius: 16, overflow: 'hidden' }}
+                style={{
+                  borderRadius: 16,
+                  overflow: 'hidden',
+                  boxShadow: '0 4px 12px rgba(0,0,0,0.05)',
+                }}
                 cover={
-                  <div style={{ position: 'relative' }}>
-                    <img
-                      alt={product.title}
-                      src={product.image}
-                      style={{ height: 260, width: '100%', objectFit: 'cover' }}
-                    />
-                    <Tag
-                      color="magenta"
-                      style={{ position: 'absolute', top: 12, left: 12 }}
-                    >
+                  <div style={{ position: 'relative', height: 260, width: '100%' }}>
+                    {loading || !product?.imageUrls ? (
+                      <div
+                        style={{
+                          height: '100%',
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'center',
+                          backgroundColor: '#f0f2f5',
+                        }}
+                      >
+                        <Spin size="large" />
+                      </div>
+                    ) : (
+                      <img
+                        alt={product.name}
+                        src={product.imageUrls[0]} // Make sure you use the correct field for the image
+                        style={{ height: '100%', width: '100%', objectFit: 'cover' }}
+                      />
+                    )}
+                    <Tag color="magenta" style={{ position: 'absolute', top: 12, left: 12 }}>
                       Limited
                     </Tag>
                   </div>
                 }
               >
                 <Meta
-                  title={<Text strong>{product.title}</Text>}
-                  description={<Text type="danger">{product.price}</Text>}
+                  title={<Text strong>{product?.name || 'Loading...'}</Text>}
+                  description={
+                    <>
+                      <Text type="danger">
+                        {product?.price ? `฿${product.price}` : ''}
+                      </Text>
+                      <div style={{ marginTop: 8 }}>
+                        <Text strong>Available Sizes:</Text>
+                        <div style={{ marginTop: 6 }}>
+                          {product?.sizes && product.sizes.length > 0 ? (
+                            product.sizes.map((size, index) => (
+                              <Tag key={index} style={{ margin: '4px' }} color="blue">
+                                {size}
+                              </Tag>
+                            ))
+                          ) : (
+                            <Text type="secondary">No sizes available</Text>
+                          )}
+                        </div>
+                      </div>
+                    </>
+                  }
                 />
               </Card>
             </Col>
@@ -168,7 +217,7 @@ const Home = () => {
 
       {/* Promo Benefits */}
       <Divider />
-      <div style={{ padding: '40px 5%' }}>
+      <div style={{ padding: '40px 5%', backgroundColor: '#f7f9fc' }}>
         <Row gutter={[24, 24]} justify="center">
           {[{
             icon: <ClockCircleOutlined style={{ fontSize: 28, color: '#faad14' }} />,
@@ -209,7 +258,6 @@ const Home = () => {
         position: 'relative',
         overflow: 'hidden'
       }}>
-        {/* Marquee */}
         <div style={{
           whiteSpace: 'nowrap',
           overflow: 'hidden',
@@ -241,7 +289,6 @@ const Home = () => {
         </Button>
       </div>
 
-      {/* CSS for Marquee */}
       <style>{`
         @keyframes marquee {
           0% { transform: translateX(100%); }
