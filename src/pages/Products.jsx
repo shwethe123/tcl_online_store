@@ -22,6 +22,7 @@ import {
 import { ShoppingCartOutlined, HeartOutlined, HeartFilled, FilterOutlined } from '@ant-design/icons';
 import { Link } from 'react-router-dom';
 import { fetchProducts } from '../api/api_store';
+import { motion } from 'framer-motion';
 
 const { Title, Text } = Typography;
 const { Meta } = Card;
@@ -136,7 +137,7 @@ const Products = () => {
           <Text>-</Text>
           <Text>฿{priceRange[1]}</Text>
         </Space>
-        
+
         <Text strong style={{ marginTop: 16 }}>Category</Text>
         <Select
           value={selectedCategory}
@@ -147,7 +148,7 @@ const Products = () => {
             label: category.charAt(0).toUpperCase() + category.slice(1)
           }))}
         />
-        
+
         <Text strong style={{ marginTop: 16 }}>Sort By</Text>
         <Select
           placeholder="Sort by"
@@ -166,7 +167,13 @@ const Products = () => {
   );
 
   return (
-    <div className="products-container" style={{ padding: screens.xs ? '12px' : '24px' }}>
+    <motion.div
+      className="products-container"
+      style={{ background: '#e0e5ec', padding: screens.xs ? '12px' : '24px' }}
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      transition={{ duration: 0.5 }}
+    >
       <Space direction="vertical" size={24} style={{ width: '100%' }}>
         <Row gutter={[16, 16]} align="middle">
           <Col xs={24} md={8}>
@@ -208,8 +215,8 @@ const Products = () => {
                   />
                 </>
               ) : (
-                <Button 
-                  icon={<FilterOutlined />} 
+                <Button
+                  icon={<FilterOutlined />}
                   onClick={() => setFilterDrawerVisible(true)}
                   size="large"
                 >
@@ -226,12 +233,12 @@ const Products = () => {
               {filterCard}
             </Col>
           )}
-          
+
           <Col xs={24} md={18}>
             {loading ? (
               <Row gutter={[16, 16]}>
-                {[...Array(screens.xs ? 4 : 6)].map((_, i) => (
-                  <Col xs={12} sm={12} lg={8} key={i}>
+                {[...Array(screens.xs ? 4 : 8)].map((_, i) => (
+                  <Col xs={24} sm={12} md={8} lg={6} key={i}>
                     <Card><Skeleton active /></Card>
                   </Col>
                 ))}
@@ -240,96 +247,59 @@ const Products = () => {
               <Row gutter={[16, 16]}>
                 {paginatedProducts.length > 0 ? (
                   paginatedProducts.map(product => (
-                    <Col xs={12} sm={12} lg={8} key={product._id}>
-                      <Badge.Ribbon
-                        text={
-                          product.price > 500 ? 'Premium' :
-                          product.price > 200 ? 'Standard' :
-                          'Best Deal'
-                        }
-                        color={
-                          product.price > 500 ? 'black' :
-                          product.price > 200 ? 'orange' :
-                          'green'
-                        }
+                    <Col xs={24} sm={12} md={8} lg={6} xl={6} key={product._id}>
+                      <motion.div
+                        whileHover={{ scale: 1.05 }}
+                        whileTap={{ scale: 0.95 }}
+                        animate={{ opacity: 1 }}
+                        transition={{ type: 'spring', stiffness: 200 }}
                       >
-                        <Card
-                          hoverable
-                          cover={
-                            <Link to={`/product/${product._id}`}>
-                              <img
-                                alt={product.name}
-                                src={product.imageUrls}
-                                style={{
-                                  width: '100%',
-                                  height: screens.xs ? '120px' : '180px',
-                                  objectFit: 'cover'
-                                }}
-                              />
-                            </Link>
-                          }
-                          actions={[
-                            <Button
-                              type="primary"
-                              icon={<ShoppingCartOutlined />}
-                              onClick={() => handleAddToCart(product)}
-                              style={{ 
-                                fontSize: screens.xs ? '10px' : '12px', 
-                                height: screens.xs ? '26px' : '30px', 
-                                padding: screens.xs ? '0 4px' : '0 8px'
-                              }}
-                            >
-                              {screens.xs ? 'Add' : 'Add to Cart'}
-                            </Button>,
-                            wishlist.includes(product._id)
-                              ? <HeartFilled
-                                  onClick={() => toggleWishlist(product._id)}
-                                  style={{ 
-                                    color: '#ff4d4f', 
-                                    fontSize: screens.xs ? '14px' : '16px' 
-                                  }}
-                                />
-                              : <HeartOutlined
-                                  onClick={() => toggleWishlist(product._id)}
-                                  style={{ 
-                                    fontSize: screens.xs ? '14px' : '16px' 
-                                  }}
-                                />
-                          ]}
-                          bodyStyle={{ padding: screens.xs ? '12px' : '16px' }}
+                        <Badge.Ribbon
+                          text={product.price > 500 ? 'Premium' : product.price > 200 ? 'Standard' : 'Best Deal'}
+                          color={product.price > 500 ? 'black' : product.price > 200 ? 'orange' : 'green'}
                         >
-                          <Meta
-                            title={
-                              <Link to={`/product/${product._id}`} style={{ 
-                                fontSize: screens.xs ? '12px' : '13px', 
-                                fontWeight: 500 
-                              }}>
-                                {product.name}
+                          <Card
+                            hoverable
+                            cover={
+                              <Link to={`/product/${product._id}`}>
+                                <img
+                                  alt={product.name}
+                                  src={product.imageUrls}
+                                  style={{
+                                    width: '100%',
+                                    height: screens.xs ? '120px' : '180px',
+                                    objectFit: 'cover',
+                                    borderRadius: 10
+                                  }}
+                                />
                               </Link>
                             }
-                            description={
-                              <Space direction="vertical" size={2}>
-                                <Tag color="blue" style={{ fontSize: screens.xs ? '10px' : '11px' }}>
-                                  {product.category}
-                                </Tag>
-                                <Rate 
-                                  disabled 
-                                  defaultValue={product.rating} 
-                                  style={{ fontSize: screens.xs ? 10 : 12 }} 
-                                />
-                                <Text strong style={{ fontSize: screens.xs ? '12px' : '13px' }}>
-                                  ฿{product.price}
-                                </Text>
-                                {product.stock <= 5 && (
-                                  <Text type="danger" style={{ fontSize: screens.xs ? '10px' : '12px' }}>
-                                    Only {product.stock} left!
-                                  </Text>
-                                )}
-                              </Space>
-                            }
-                          />
-                        </Card>
-                      </Badge.Ribbon>
+                            actions={[
+                              <Button
+                                type="primary"
+                                icon={<ShoppingCartOutlined />}
+                                onClick={() => handleAddToCart(product)}
+                              >
+                                {screens.xs ? 'Add' : 'Add to Cart'}
+                              </Button>,
+                              wishlist.includes(product._id)
+                                ? <HeartFilled onClick={() => toggleWishlist(product._id)} />
+                                : <HeartOutlined onClick={() => toggleWishlist(product._id)} />
+                            ]}
+                          >
+                            <Meta
+                              title={<Link to={`/product/${product._id}`}>{product.name}</Link>}
+                              description={
+                                <Space direction="vertical" size={2}>
+                                  <Tag color="blue">{product.category}</Tag>
+                                  <Rate disabled defaultValue={product.rating} />
+                                  <Text strong>฿{product.price}</Text>
+                                </Space>
+                              }
+                            />
+                          </Card>
+                        </Badge.Ribbon>
+                      </motion.div>
                     </Col>
                   ))
                 ) : (
@@ -350,23 +320,22 @@ const Products = () => {
               pageSize={pageSize}
               onChange={setCurrentPage}
               showSizeChanger={false}
-              size={screens.xs ? 'small' : 'default'}
             />
           </Row>
         )}
       </Space>
 
-      {/* Mobile Filter Drawer */}
       <Drawer
         title="Filters"
         placement="right"
         onClose={() => setFilterDrawerVisible(false)}
-        visible={filterDrawerVisible}
+        open={filterDrawerVisible}
         width={300}
+        closable
       >
         {filterCard}
       </Drawer>
-    </div>
+    </motion.div>
   );
 };
 

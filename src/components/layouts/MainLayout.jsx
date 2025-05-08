@@ -76,6 +76,7 @@ const MainLayout = ({ children }) => {
           <Col>
             <div style={{ display: 'flex', alignItems: 'center' }}>
               {isMobile && (
+                // <img src="../../assets/logo.png" alt="" />
                 <Button
                   type="text"
                   icon={<MenuOutlined />}
@@ -84,6 +85,7 @@ const MainLayout = ({ children }) => {
                 />
               )}
               <Link to="/" style={{ fontSize: 24, fontWeight: 'bold', color: '#4A90E2' }}>
+              <img src="../../assets/logo.png" alt="" />
                 TCL Store
               </Link>
             </div>
@@ -123,11 +125,11 @@ const MainLayout = ({ children }) => {
       )}
 
       {/* Main Content */}
-      <Content style={{ padding: isMobile ? 0 : 20, background: '#ffffff' }}>
+      <Content style={{ padding: isMobile ? 0 : 0, background: '#ffffff' }}>
         <div style={{
           maxWidth: 2200,
           margin: 'auto',
-          padding: isMobile ? 16 : 32,
+          // padding: isMobile ? 16 : 32,
           background: '#ffffff',
           borderRadius: 16,
           boxShadow: '0 8px 24px rgba(0, 0, 0, 0.05)',
