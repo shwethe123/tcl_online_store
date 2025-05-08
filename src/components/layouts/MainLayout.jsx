@@ -123,9 +123,9 @@ const MainLayout = ({ children }) => {
       )}
 
       {/* Main Content */}
-      <Content style={{ padding: isMobile ? 16 : 40, background: '#f0f2f5' }}>
+      <Content style={{ padding: isMobile ? 0 : 20, background: '#ffffff' }}>
         <div style={{
-          maxWidth: 1200,
+          maxWidth: 2200,
           margin: 'auto',
           padding: isMobile ? 16 : 32,
           background: '#ffffff',
